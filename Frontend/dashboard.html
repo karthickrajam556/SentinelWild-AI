@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SentinelWild AI Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  </head>
+
+  <body>
+    <!-- ================= NAVBAR ================= -->
+    <header class="navbar">
+      <div class="logo"><i class="fa-solid fa-paw"></i> SentinelWild AI</div>
+
+      <div class="nav-buttons">
+        <button onclick="showLive()"><a>Live</a></button>
+        <button onclick="showAnalytics()"><a>Analytics</a></button>
+        <button onclick="showReport()"><a>Monthly Report</a></button>
+        <button onclick="showFeedback()"><a>Feedback</a></button>
+      </div>
+
+      <div class="profile-area">
+        <div class="profile-icon" onclick="toggleProfile()">👤</div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <p id="usernameDisplay">User</p>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ================= LIVE STATUS ================= -->
+    <section class="live-section">
+      <!-- LEFT PANEL -->
+      <div class="left-panel">
+        <h2><i class="fa-solid fa-tower-broadcast fa-fade" style="color: red;"></i> Live Status</h2>
+
+        <div class="input-card">
+          <h3 class="webcam-title">Webcam</h3>
+          <button onclick="startWebcam()">Start Webcam</button>
+          <button onclick="stopWebcam()" style="margin-left: 70px;">Stop Webcam</button>
+          <div>
+             <h5 style="color: rgb(198, 197, 197);"> Activate the webcam to enable real-time monitoring and threat detection.</h5>
+             <h3><i class="fa-solid fa-camera" style="margin-left: 350px;"> </i>
+                <i class="fa-solid fa-arrows-rotate" style="margin-left: 20px;"> </i>
+                <i class="fas fa-ellipsis-v" style="margin-left: 20px;"> </i>
+            </h3>
+          </div>
+        </div>
+
+        <div class="input-card">
+          <h3>Upload Image</h3>
+        
+          <input type="file" id="imageInput"/>
+          <button id="imageUploadBtn" onclick="uploadImage()">Upload</button>
+          <div id="uploadSpinner" class="spinner" style="display:none;"></div>
+          <div>
+             <h5 style="color: rgb(198, 197, 197);"> Upload images to analyze and detect potential threats for decision making using AI.</h5>
+             <h3><i class="fa-solid fa-image" style="margin-left: 350px;"> </i>
+                 <i class="fa-solid fa-arrows-rotate" style="margin-left: 20px;"> </i>
+                <i class="fas fa-ellipsis-v" style="margin-left: 20px;"> </i>
+            </h3>
+          </div>
+        </div>
+
+        <div class="input-card">
+          <h3>Upload Video</h3>
+          <input type="file" id="videoInput" />
+          <button onclick="uploadVideo()">Upload</button>
+          <div>
+             <h5 style="color: rgb(198, 197, 197);"> Upload a video to monitor activities and identify threats instantly and accurately.</h5>
+             <h3><i class="fa-solid fa-video" style="margin-left: 350px;"> </i>
+                <i class="fa-solid fa-arrows-rotate" style="margin-left: 20px;"> </i>
+                <i class="fas fa-ellipsis-v" style="margin-left: 20px;"> </i>
+            </h3>
+          </div>
+        </div>
+
+        <div class="stream-box">
+          <img id="liveStream"/>
+        </div>
+        <div id="detectionResult" class="detection-result" style="display:none;">
+          <h3>🔍 Detection Summary</h3>
+
+          <div id="detectionList"></div>
+
+          <div class="decision-box">
+            <p><strong>Decision:</strong> <span id="riskDecision"></span></p>
+            <p><strong>Alert Triggered:</strong> <span id="alertStatus"></span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div class="right-panel">
+
+        <!-- INCIDENT SUMMARY -->
+        <div class="incident-summary">
+
+          <div class="summary-box total">
+            <h3>Total Incidents</h3>
+            <p id="totalIncidents">0</p>
+            <img src="Animal detection images/warning.png" style="width: 100px;">
+          </div>
+
+          <div class="summary-box active">
+            <h3>Active Incidents</h3>
+            <p id="activeIncidents">0</p>
+            <img src="Animal detection images/scanner.png.webp" style="width: 100px;">
+          </div>
+
+          <div class="summary-box resolved">
+            <h3>Resolved</h3>
+            <p id="resolvedIncidents">0</p>
+            <img src="Animal detection images/checklist.png" style="width: 100px;">
+          </div>
+
+        </div>
+
+
+        <div class="status-card">
+          <h3>System Status</h3>
+          <p id="systemStatus">
+            <span id="statusDot" class="status-dot"></span>
+            <span id="statusText">Checking...</span>
+            <img src="Animal detection images/switch-on.png" style="width: 50px; margin-left: 450px; margin-top: -50px; position:static;">
+            <h5 style="color: rgb(198, 197, 197);"> check your system status and performance </h5>
+          </p>
+          
+        </div>
+
+        <div class="status-card">
+          <h3>Current Threat Level</h3>
+          <p id="threatLevel" class="threat-text">--</p>
+          <img src="Animal detection images/switch-on.png" style="width: 50px; margin-left: 520px; ">
+          <h5 style="color: rgb(198, 197, 197);"> check your system status and performance </h5>
+          
+        </div>
+
+
+        <div class="status-card">
+          <h3>Incident Operations</h3>
+
+          <div class="incident-table-container">
+            <table class="incident-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Camera-ID</th>
+                  <th>Animal</th>
+                  <th>Alert</th>
+                  <th>Zone</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="incidentTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ================= ANALYTICS SECTION ================= -->
+    <section id="analyticsSection" style="display: none; padding: 30px 70px">
+      <h2 class="analytics-title" style="margin-bottom: 40px;"> <i class="fa-solid fa-arrow-trend-up fa-fade" style="color: red;"></i> Analytics Dashboard</h2>
+
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h3>Animal Frequency</h3>
+          <canvas id="animalChart"></canvas>
+          <h5 style="color: rgb(198, 197, 197);"> Track animal frequency using clear graphical insights.
+                Understand movement patterns and activity variations easily.
+                Enhance analysis with data-driven visualization. </h5>
+           <h3>
+                <i class="fas fa-ellipsis-v" style="margin-left: 600px;"> </i>
+            </h3>  
+        </div>
+
+        <div class="analytics-card">
+          <h3>Zone Vulnerability</h3>
+          <canvas id="zoneChart"></canvas>
+          <h5 style="color:rgb(198, 197, 197);">Track vulnerability across different zones with clear graphical insights.
+              Analyze risk intensity and emerging threat trends effectively.
+              Support smarter planning with data-driven security analysis.</h5>
+          <h3>
+                <i class="fas fa-ellipsis-v" style="margin-left: 600px;"> </i>
+            </h3> 
+        </div>
+
+        <div class="analytics-card">
+          <h3>Time Pattern</h3>
+          <canvas id="timeChart"></canvas>
+          <h5 style="color: rgb(198, 197, 197);"> Analyze time patterns using clear graphical representation.
+                  Understand variations, trends, and peak time intervals.
+                  Enable smarter insights with data-driven time analysis.</h5>
+          <h3>
+                <i class="fas fa-ellipsis-v" style="margin-left: 600px;"> </i>
+            </h3>
+        </div>
+
+        <div class="analytics-card">
+          <h3>Risk Trend</h3>
+          <canvas id="riskChart"></canvas>
+          <h5 style="color: rgb(198, 197, 197);">Visualize risk trends through dynamic graphical insights.
+                  Identify increasing or decreasing risk patterns over time.
+                  Support proactive decisions with data-driven risk analysis. </h5>
+          <h3>
+                <i class="fas fa-ellipsis-v" style="margin-left: 600px;"> </i>
+            </h3>
+        </div>
+        <div class="analytics-card prediction-card full-width">
+          <h3>AI Prediction</h3>
+          <p id="predictionText">Loading prediction...</p>
+          <div class="accuracy-box">
+          <h4>Model Accuracy</h4>
+          <p id="accuracyText">--%</p>
+        </div>
+        <div class="analytics-card full-width">
+          <h3>Wildlife Detection Map</h3>
+          <div id="wildlifeMap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reportSection" style="display: none; padding: 40px">
+      <div class="report-header">
+        <h2> Monthly Intelligence Report</h2>
+        <button onclick="downloadCSV()" class="download-btn">
+          ⬇ Download CSV
+        </button>
+      </div>
+
+      <div id="reportContainer" class="report-grid"></div>
+    </section>
+
+    <section id="feedbackSection" style="display:none; padding:30px">
+      <h2>Feedback History</h2>
+
+      <table class="feedback-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Animal</th>
+            <th>Correct?</th>
+            <th>Comment</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="feedbackTableBody"></tbody>
+      </table>
+    </section>
+
+    <!-- ================= FEEDBACK MODAL ================= -->
+    <div id="feedbackModal" class="modal" style="display: none">
+      <div class="modal-content">
+        <h3>Detection Feedback</h3>
+
+        <p id="feedbackAnimal"></p>
+
+        <div class="feedback-options">
+          <button onclick="selectFeedback(true)" id="yesBtn">Yes</button>
+          <button onclick="selectFeedback(false)" id="noBtn">No</button>
+        </div>
+
+        <textarea id="feedbackComment" placeholder="Add comment..."></textarea>
+
+        <div class="modal-actions">
+          <button onclick="submitFeedback()">Submit</button>
+          <button onclick="closeFeedbackModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

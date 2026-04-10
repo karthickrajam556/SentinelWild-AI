@@ -1,0 +1,30 @@
+# Environment variables
+.env
+
+# Virtual Environment
+venv/
+
+# Uploaded files
+uploaded_files/
+
+# Videos
+*.mp4
+*.avi
+*.mov
+
+# Datasets
+datasets/
+
+# ML Models
+*.pt
+*.pth
+
+# Database
+*.db
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+*.log
