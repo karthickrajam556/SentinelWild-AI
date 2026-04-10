@@ -2,6 +2,7 @@
 .env
 
 # Virtual Environment
+.vscode/
 venv/
 
 # Uploaded files
