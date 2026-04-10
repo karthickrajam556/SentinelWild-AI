@@ -17,7 +17,6 @@ uploaded_files/
 datasets/
 
 # ML Models
-*.pt
 *.pth
 
 # Database
