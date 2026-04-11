@@ -1,12 +1,18 @@
 from datetime import datetime
 import requests
 import time
-import pygame
 import os
 from dotenv import load_dotenv
 import threading
 
-pygame.mixer.init()
+try:
+    import pygame
+except ImportError:
+    pygame = None
+
+if pygame:
+    pygame.mixer.init()
+
 
 SOUND_PATH = os.path.join(os.getcwd(), "Alert Sound.mp3")
 
